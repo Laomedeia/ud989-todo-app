@@ -20,6 +20,8 @@ var app = app || {};
 			'click .toggle': 'toggleCompleted',
 			'dblclick label': 'edit',
 			'click .destroy': 'clear',
+			'click .edit-btn': 'edit',
+			'click .priority-btn': 'priorOp',
 			'keypress .edit': 'updateOnEnter',
 			'keydown .edit': 'revertOnEscape',
 			'blur .edit': 'close'
@@ -32,6 +34,7 @@ var app = app || {};
 		initialize: function () {
 			this.listenTo(this.model, 'change', this.render);
 			this.listenTo(this.model, 'destroy', this.remove);
+			this.listenTo(this.model, 'edit-btn', this.edit);
 			this.listenTo(this.model, 'visible', this.toggleVisible);
 		},
 
@@ -50,6 +53,7 @@ var app = app || {};
 
 			this.$el.html(this.template(this.model.toJSON()));
 			this.$el.toggleClass('completed', this.model.get('completed'));
+			this.$el.toggleClass('prior', this.model.get('prior'));
 			this.toggleVisible();
 			this.$input = this.$('.edit');
 			return this;
@@ -75,7 +79,11 @@ var app = app || {};
 			this.$el.addClass('editing');
 			this.$input.focus();
 		},
-
+		// set prior for todos
+		priorOp: function () {
+			this.model.togglePriority();
+			this.$input.focus();
+		},
 		// Close the `"editing"` mode, saving changes to the todo.
 		close: function () {
 			var value = this.$input.val();
